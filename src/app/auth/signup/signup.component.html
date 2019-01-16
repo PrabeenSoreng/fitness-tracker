@@ -1,7 +1,7 @@
 <section>
     <form #f="ngForm" (ngSubmit)="onSignup(f)" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10px">
         <mat-form-field>
-            <input type="email" #email="ngModel" ngModel name="email" matInput placeholder="Your Email" email required autocomplete="off">
+            <input type="email" #email="ngModel" ngModel name="email" matInput placeholder="Your Email" email required>
             <mat-error *ngIf="email.hasError('required')">Email is required.</mat-error>
             <mat-error *ngIf="!email.hasError('required')">Email is invalid.</mat-error>
         </mat-form-field>

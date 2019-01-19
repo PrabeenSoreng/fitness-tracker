@@ -46,6 +46,6 @@ export class TrainingService {
     }
 
     getPastExercises() {
-        return {...this.exercises};
+        return this.exercises.slice();
     }
 }

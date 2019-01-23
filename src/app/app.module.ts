@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { AngularFireModule } from '@angular/fire';
-import { AngularFirestoreModule } from '@angular/fire/firestore';
+import { AngularFirestoreModule, FirestoreSettingsToken } from '@angular/fire/firestore';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -23,6 +23,7 @@ import { PastTrainingsComponent } from './training/past-trainings/past-trainings
 import { TrainingComponent } from './training/training.component';
 import { TrainingService } from './training/training.service';
 import { WelcomeComponent } from './welcome/welcome.component';
+import { UIService } from './shared/ui.service';
 
 @NgModule({
   declarations: [
@@ -52,7 +53,9 @@ import { WelcomeComponent } from './welcome/welcome.component';
   ],
   providers: [
     AuthService,
-    TrainingService
+    TrainingService,
+    UIService,
+    {provide: FirestoreSettingsToken, useValue: {}}
   ],
   bootstrap: [AppComponent],
   entryComponents: [

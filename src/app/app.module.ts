@@ -3,10 +3,12 @@ import { AngularFireModule } from '@angular/fire';
 import { FirestoreSettingsToken } from '@angular/fire/firestore';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { StoreModule } from '@ngrx/store';
 import { environment } from 'src/environments/environment';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { reducers } from './app.reducer';
 import { AuthModule } from './auth/auth.module';
 import { AuthService } from './auth/auth.service';
 import { HeaderComponent } from './navigation/header/header.component';
@@ -31,7 +33,8 @@ import { WelcomeComponent } from './welcome/welcome.component';
     AuthModule,
     TrainingModule,
     SharedModule,
-    AppRoutingModule
+    AppRoutingModule,
+    StoreModule.forRoot(reducers)
   ],
   providers: [
     AuthService,

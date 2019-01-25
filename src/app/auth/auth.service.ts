@@ -1,8 +1,11 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
 import { Subject } from 'rxjs';
 
+import * as fromRoot from '../app.reducer';
+import * as UI from '../shared/ui.actions';
 import { UIService } from '../shared/ui.service';
 import { TrainingService } from '../training/training.service';
 import { AuthData } from './auth-data.model';
@@ -16,6 +19,7 @@ export class AuthService {
         private trainingService: TrainingService,
         private uiService: UIService,
         private afAuth: AngularFireAuth,
+        private store: Store<fromRoot.State>,
         private router: Router) {}
 
     initAuthListner() {
@@ -34,28 +38,34 @@ export class AuthService {
     }
 
     registerUser(authData: AuthData) {
-        this.uiService.loadingStateChanged.next(true);
+        // this.uiService.loadingStateChanged.next(true);
+        this.store.dispatch(new UI.StartLoading());
         this.afAuth.auth.createUserWithEmailAndPassword(authData.email, authData.password)
             .then(result => {
                 console.log(result);
-                this.uiService.loadingStateChanged.next(false);
+                this.store.dispatch(new UI.StopLoading());
+                // this.uiService.loadingStateChanged.next(false);
                 // this.authSuccessfully();
             })
             .catch(err => {
-                this.uiService.loadingStateChanged.next(false);
+                // this.uiService.loadingStateChanged.next(false);
+                this.store.dispatch(new UI.StopLoading());
                 this.uiService.showSnackbar(err.message, null, 3000);
             });
     }
 
     login(authData: AuthData) {
-        this.uiService.loadingStateChanged.next(true);
+        // this.uiService.loadingStateChanged.next(true);
+        this.store.dispatch(new UI.StartLoading());
         this.afAuth.auth.signInWithEmailAndPassword(authData.email, authData.password)
             .then(result => {
-                this.uiService.loadingStateChanged.next(false);
+                this.store.dispatch(new UI.StopLoading());
+                // this.uiService.loadingStateChanged.next(false);
                 // this.authSuccessfully();
             })
             .catch(err => {
-                this.uiService.loadingStateChanged.next(false);
+                // this.uiService.loadingStateChanged.next(false);
+                this.store.dispatch(new UI.StopLoading());
                 this.uiService.showSnackbar(err.message, null, 3000);
             });
     }

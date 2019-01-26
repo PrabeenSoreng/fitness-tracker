@@ -62,7 +62,6 @@ export class AuthService {
         this.store.dispatch(new UI.StartLoading());
         this.afAuth.auth.signInWithEmailAndPassword(authData.email, authData.password)
             .then(result => {
-                this.trainingService.userId.next(result.user.uid);
                 this.store.dispatch(new UI.StopLoading());
                 // this.uiService.loadingStateChanged.next(false);
                 // this.authSuccessfully();

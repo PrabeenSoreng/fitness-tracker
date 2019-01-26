@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Store } from '@ngrx/store';
 import { Subject, Subscription } from 'rxjs';
-import { map, take } from 'rxjs/operators';
+import { map, take, switchMap } from 'rxjs/operators';
 
 import * as fromRoot from '../app.reducer';
 import { UIService } from '../shared/ui.service';
 import { Exercise } from './exercise.model';
 import * as Training from './training.actions';
+import { AngularFireAuth } from '@angular/fire/auth';
 
 @Injectable()
 export class TrainingService {
@@ -18,9 +19,11 @@ export class TrainingService {
     private runningExercise: Exercise;
     private fbSubs: Subscription[] = [];
     userId = new Subject<string>();
+    user: string;
 
     constructor(
         private afs: AngularFirestore,
+        private afAuth: AngularFireAuth,
         private store: Store<fromRoot.State>,
         private uiService: UIService) {}
 
@@ -81,17 +84,22 @@ export class TrainingService {
     // }
 
     fetchPastExercises() {
-        this.fbSubs.push(this.afs.collection(`finishedExercises`).valueChanges()
+        this.fbSubs.push(this.afAuth.authState.pipe(
+            switchMap(user => {
+                return this.afs.collection(`finishedExercises`).doc(user.uid).collection('exercises').valueChanges()
+            })
+        )
             .subscribe((exercises: Exercise[]) => {
                 // this.finishedExercisesChanged.next(exercises);
                 this.store.dispatch(new Training.SetFinishedTrainings(exercises));
-            }));
+            }, err => console.log(err)));
     }
 
     private addDataToDatabase(exercise: Exercise) {
-        // this.userId.subscribe(user => {
-            this.afs.collection(`finishedExercises`).add(exercise);
-        // });
+        this.fbSubs.push(this.afAuth.authState
+            .subscribe(user => {
+                this.afs.collection(`finishedExercises`).doc(user.uid).collection('exercises').add(exercise);
+            }));
     }
 
     cancelSubscriptions() {

@@ -1,27 +1,31 @@
-import { Component, OnInit, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
-
-import { TrainingService } from '../training.service';
-import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material';
-import { Exercise } from '../exercise.model';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
+import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
+
+import * as fromRoot from '../../app.reducer';
+import { Exercise } from '../exercise.model';
+import { TrainingService } from '../training.service';
 
 @Component({
   selector: 'app-past-trainings',
   templateUrl: './past-trainings.component.html',
   styleUrls: ['./past-trainings.component.css']
 })
-export class PastTrainingsComponent implements OnInit, AfterViewInit, OnDestroy {
+export class PastTrainingsComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   exChangedSubscription: Subscription;
   displayedColumns = ['date', 'name', 'calories', 'duration', 'state'];
   dataSource = new MatTableDataSource<Exercise>();
 
-  constructor(private trainingService: TrainingService) { }
+  constructor(
+    private store: Store<fromRoot.State>,
+    private trainingService: TrainingService) { }
 
   ngOnInit() {
     this.trainingService.fetchPastExercises();
-    this.exChangedSubscription = this.trainingService.finishedExercisesChanged
+    this.store.select(fromRoot.getFinishedExercises)
       .subscribe((exercises: Exercise[]) => {
         this.dataSource.data = exercises;
       });
@@ -36,7 +40,7 @@ export class PastTrainingsComponent implements OnInit, AfterViewInit, OnDestroy 
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
-  ngOnDestroy() {
-    if(this.exChangedSubscription) this.exChangedSubscription.unsubscribe();
-  }
+  // ngOnDestroy() {
+  //   if(this.exChangedSubscription) this.exChangedSubscription.unsubscribe();
+  // }
 }

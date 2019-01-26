@@ -9,6 +9,7 @@ import { UIService } from '../shared/ui.service';
 import { TrainingService } from '../training/training.service';
 import { AuthData } from './auth-data.model';
 import * as Auth from './auth.actions';
+import { Subject } from 'rxjs';
 
 @Injectable()
 export class AuthService {
@@ -61,6 +62,7 @@ export class AuthService {
         this.store.dispatch(new UI.StartLoading());
         this.afAuth.auth.signInWithEmailAndPassword(authData.email, authData.password)
             .then(result => {
+                this.trainingService.userId.next(result.user.uid);
                 this.store.dispatch(new UI.StopLoading());
                 // this.uiService.loadingStateChanged.next(false);
                 // this.authSuccessfully();
